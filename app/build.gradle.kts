@@ -47,6 +47,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.firebase.appdistribution.gradle)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -59,9 +60,17 @@ dependencies {
     // Hilt dependancies
     implementation("com.google.dagger:hilt-android:2.57.2")
     kapt("com.google.dagger:hilt-android-compiler:2.57.2")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+
+    // Lifecycle (for ViewModelScope and LifecycleScope)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
 }
 
-    // Allow references to generated code
-    kapt {
-        correctErrorTypes = true
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }
