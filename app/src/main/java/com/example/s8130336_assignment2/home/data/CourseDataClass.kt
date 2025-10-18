@@ -5,13 +5,13 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class CourseDataClass(
-    @Json(name = "courseCode") val course_code: String,
-    @Json(name = "courseName") val course_name: String,
-    @Json(name = "instructor") val instructor: String
+    @Json(name = "courseCode") var course_code: String,
+    @Json(name = "courseName") var course_name: String,
+    @Json(name = "instructor") var instructor: String
 )
 
 @JsonClass(generateAdapter = true)
 data class Details(
-    @Json(name = "credits") val course_credits: String,
-    @Json(name = "description") val course_description: String
+    @Json(name = "credits") var course_credits: String,
+    @Json(name = "description") var course_description: String
 )
