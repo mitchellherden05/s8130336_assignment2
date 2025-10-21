@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.s8130336_assignment2.home.data.CourseDataClass
 import com.example.s8130336_assignment2.home.ui.RecylerAdapter
 
 // TODO: Rename parameter arguments, choose names that match
@@ -42,9 +43,17 @@ class DashboardFragment : Fragment() {
 
         adapter = RecylerAdapter(dataList)
         recylerView.adapter = adapter
+    }
 
-        adapter.setData(dataList)
-
+    private fun getDataList(): List<CourseDataClass> {
+        // In a real app, this data would come from a ViewModel, database, or network call.
+        return listOf(
+            CourseDataClass("NIT3112", "Android Application Development", "Dr. Smith"),
+            CourseDataClass("NIT3122", "iOS Application Development", "Dr. Jones"),
+            CourseDataClass("NIT3132", "Web Development", "Prof. Williams"),
+            CourseDataClass("NIT3142", "Database Systems", "Dr. Brown"),
+            CourseDataClass("NIT3152", "Network Security", "Prof. Davis")
+        )
     }
 
     companion object {

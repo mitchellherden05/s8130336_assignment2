@@ -4,13 +4,21 @@ plugins {
     id("kotlin-parcelize")
     id("androidx.navigation.safeargs.kotlin")
     id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
+    alias(libs.plugins.hilt.android)
 
 }
 
 android {
     namespace = "com.example.s8130336_assignment2"
     compileSdk = 36
+
+    packaging {
+        resources {
+            excludes += "META-INF/INDEX.LIST"
+            excludes += "META-INF/DEPENDENCIES"
+            pickFirsts += "META-INF/io.netty.versions.properties"
+        }
+    }
 
     defaultConfig {
         applicationId = "com.example.s8130336_assignment2"
@@ -49,6 +57,9 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.appdistribution.gradle)
     implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.cardview)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -59,8 +70,8 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
 
     // Hilt dependancies
-    implementation("com.google.dagger:hilt-android:2.57.2")
-    kapt("com.google.dagger:hilt-android-compiler:2.57.2")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")

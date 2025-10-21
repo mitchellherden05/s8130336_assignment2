@@ -1,6 +1,5 @@
 package com.example.s8130336_assignment2.home.network
 
-import com.google.firebase.appdistribution.gradle.ApiService
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import okhttp3.OkHttpClient
@@ -10,8 +9,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 class RestfulApiDevRetrofitClient {
 
-    private val BASE_URL_DASHBOARD = "https://nit3213api.onrender.com/dashboard/"
-    private val BASE_URL_AUTH = "https://nit3213api.onrender.com/footscray/auth"
+    private val BASE_URL = "https://nit3213api.onrender.com/"
 
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
@@ -27,7 +25,7 @@ class RestfulApiDevRetrofitClient {
         .build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL_DASHBOARD)
+        .baseUrl(BASE_URL)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .client(client)
         .build()

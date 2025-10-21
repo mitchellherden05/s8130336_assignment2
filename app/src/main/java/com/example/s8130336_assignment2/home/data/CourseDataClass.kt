@@ -10,8 +10,3 @@ data class CourseDataClass(
     @Json(name = "instructor") var instructor: String
 )
 
-@JsonClass(generateAdapter = true)
-data class Details(
-    @Json(name = "credits") var course_credits: String,
-    @Json(name = "description") var course_description: String
-)

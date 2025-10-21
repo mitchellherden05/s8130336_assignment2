@@ -1,60 +1,92 @@
 package com.example.s8130336_assignment2.home
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.example.s8130336_assignment2.R
+import com.google.android.material.textfield.TextInputEditText
+import dagger.hilt.android.AndroidEntryPoint
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [LoginFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    // Get a reference to the ViewModel using the by viewModels() delegate.
+    // Hilt will automatically provide the correct instance.
+    private val viewModel: LoginViewModel by viewModels()
+
+    // Declare views. These will be initialized in onViewCreated.
+    private lateinit var usernameEditText: TextInputEditText
+    private lateinit var passwordEditText: TextInputEditText
+    private lateinit var loginButton: Button
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+        // Inflate the layout for this fragment. This is the only thing needed in onCreateView.
         return inflater.inflate(R.layout.fragment_login, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment LoginFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            LoginFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Initialize views using findViewById. It's crucial to do this in onViewCreated.
+        usernameEditText = view.findViewById(R.id.usernameEditText)
+        passwordEditText = view.findViewById(R.id.passwordEditText)
+        loginButton = view.findViewById(R.id.loginButton)
+        progressBar = view.findViewById(R.id.progressBar)
+
+        // Set up the click listener for the login button.
+        loginButton.setOnClickListener {
+            val username = usernameEditText.text.toString().trim()
+            val password = passwordEditText.text.toString().trim()
+
+            if (username.isNotEmpty() && password.isNotEmpty()) {
+                viewModel.performLogin(username, password)
+            } else {
+                Toast.makeText(requireContext(), "Username and password cannot be empty", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Observe the loginResult LiveData from the ViewModel.
+        observeLoginResult()
+    }
+
+    private fun observeLoginResult() {
+        viewModel.loginResult.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is LoginResult.Loading -> {
+                    // Show the progress bar and disable the button
+                    progressBar.isVisible = true
+                    loginButton.isEnabled = false
+                }
+                is LoginResult.Success -> {
+                    // Hide the progress bar and re-enable the button
+                    progressBar.isVisible = false
+                    loginButton.isEnabled = true
+
+                    // Show a success message and navigate
+                    Toast.makeText(requireContext(), "Login Successful!", Toast.LENGTH_LONG).show()
+                    findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
+                }
+                is LoginResult.Error -> {
+                    // Hide the progress bar and re-enable the button
+                    progressBar.isVisible = false
+                    loginButton.isEnabled = true
+
+                    // Show an error message
+                    Toast.makeText(requireContext(), "Login Failed: ${result.message}", Toast.LENGTH_LONG).show()
                 }
             }
+        }
     }
 }
