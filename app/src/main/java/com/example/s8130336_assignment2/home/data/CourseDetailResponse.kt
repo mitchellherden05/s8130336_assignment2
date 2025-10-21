@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Details(
-    @Json(name = "credits") var course_credits: String,
-    @Json(name = "description") var course_description: String
+data class CourseDetailResponse(
+    @Json(name = "entity") // Assuming the course object is nested under an "entity" key
+    val course: CourseDetailsClass
 )

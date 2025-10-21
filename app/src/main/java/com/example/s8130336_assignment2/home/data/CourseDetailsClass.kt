@@ -1,15 +1,12 @@
 package com.example.s8130336_assignment2.home.data
 
-import android.os.Parcelable
 import com.squareup.moshi.JsonClass
-import kotlinx.parcelize.Parcelize
 
 @JsonClass(generateAdapter = true)
-@Parcelize
-data class CourseDataClass(
+data class CourseDetailsClass(
     val courseCode: String?,
     val courseName: String?,
     val instructor: String?,
     val credits: Int?,
     val description: String?
-) : Parcelable
+)

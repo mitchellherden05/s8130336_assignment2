@@ -1,78 +1,81 @@
 package com.example.s8130336_assignment2
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.s8130336_assignment2.home.data.CourseDataClass
 import com.example.s8130336_assignment2.home.ui.RecylerAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [DashboardFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+@AndroidEntryPoint
 class DashboardFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private lateinit var recylerView: RecyclerView
-    private lateinit var adapter: RecylerAdapter
-    //private lateinit var viewModel: DashboardViewModel
 
+    private val viewModel: DashboardViewModel by viewModels()
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: RecylerAdapter
+    private lateinit var progressBar: ProgressBar
+    private lateinit var errorTextView: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_dashboard, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recylerView = view.findViewById(R.id.recyclerView)
+        recyclerView = view.findViewById(R.id.recyclerView)
+        progressBar = view.findViewById(R.id.progressBar)
+        errorTextView = view.findViewById(R.id.errorTextView)
 
-        val dataList = getDataList()
-
-        adapter = RecylerAdapter(dataList)
-        recylerView.adapter = adapter
+        setupRecyclerView()
+        observeViewModel()
     }
 
-    private fun getDataList(): List<CourseDataClass> {
-        // In a real app, this data would come from a ViewModel, database, or network call.
-        return listOf(
-            CourseDataClass("NIT3112", "Android Application Development", "Dr. Smith"),
-            CourseDataClass("NIT3122", "iOS Application Development", "Dr. Jones"),
-            CourseDataClass("NIT3132", "Web Development", "Prof. Williams"),
-            CourseDataClass("NIT3142", "Database Systems", "Dr. Brown"),
-            CourseDataClass("NIT3152", "Network Security", "Prof. Davis")
-        )
+    private fun setupRecyclerView() {
+        adapter = RecylerAdapter(emptyList()) { course ->
+            // Make sure the courseCode is not null before navigating
+            course.courseCode?.let {
+                val action = DashboardFragmentDirections.actionDashboardFragmentToDetailsFragment(it)
+                findNavController().navigate(action)
+            }
+        }
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment DashboardFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DashboardFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun observeViewModel() {
+        viewModel.courseResult.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is CourseResult.Loading -> {
+                    progressBar.isVisible = true
+                    errorTextView.isVisible = false
+                    recyclerView.isVisible = false
+                }
+                is CourseResult.Success -> {
+                    progressBar.isVisible = false
+                    errorTextView.isVisible = false
+                    recyclerView.isVisible = true
+                    adapter.updateCourses(result.courses)
+                }
+                is CourseResult.Error -> {
+                    progressBar.isVisible = false
+                    errorTextView.isVisible = true
+                    recyclerView.isVisible = false
+                    errorTextView.text = result.message
                 }
             }
+        }
     }
 }
